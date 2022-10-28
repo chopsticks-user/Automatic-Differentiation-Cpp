@@ -1,7 +1,7 @@
 # Makefile for C++
 
 COMPILER = g++
-VERSION = -std=c++17
+VERSION = -std=c++14
 ABSOLUTE_PROJECT_DIR = $(shell pwd)
 ENTRY_NAME = Application
 

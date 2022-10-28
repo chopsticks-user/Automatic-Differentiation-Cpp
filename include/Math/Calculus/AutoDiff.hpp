@@ -13,35 +13,60 @@ namespace math::calculus
 {
     namespace details
     {
-        template <typename var_tp, typename func_type>
-        auto _single_var_auto_diff(func_type f, var_tp x)
+        // can be added into utility
+        template <typename func_tp, typename tuple_type, size_t... index>
+        auto _pass_tuple_as_function_arguments(func_tp f, tuple_type t, std::index_sequence<index...>)
+        {
+            return f(std::get<index>(t)...);
+        }
+
+        template <typename func_tp, typename tuple_type>
+        auto _pass_tuple_as_function_arguments(func_tp f, tuple_type t)
+        {
+            static constexpr auto size = std::tuple_size<tuple_type>::value;
+            return _pass_tuple_as_function_arguments(f, t, std::make_index_sequence<size>{});
+        }
+
+        template <typename var_tp, typename func_tp>
+        auto _single_var_auto_diff(func_tp f, var_tp x)
         {
             return (f(algebra::dual_number<var_tp>{x, 1.0}) - f(algebra::dual_number<var_tp>{x}).real).dual;
         }
-    } // namespace math::calculus::details
 
-    template <typename var_tp, typename func_type>
-    auto auto_diff(func_type f, var_tp x)
-    {
-        return details::_single_var_auto_diff<
-            std::conditional_t<
-                std::is_integral<var_tp>::value,
-                math::real,
-                var_tp>>(f, x); 
-    }
-
+        // calculate differentiation of single variable functions
+        template <typename var_tp, typename func_tp>
+        auto _auto_diff(func_tp f, var_tp x)
+        {
+            return details::_single_var_auto_diff<
+                std::conditional_t<
+                    std::is_integral<var_tp>::value,
+                    math::real,
+                    var_tp>>(f, x);
+        }
 #if __cplusplus >= 201703L
-    template <int pos, typename func_type, typename... var_tp>
-    auto auto_diff(func_type f, var_tp... vars)
-    {
-        auto var_tuple = std::make_tuple(algebra::dual_number{vars}...);
-        std::get<pos>(var_tuple).dual = 1.0f;
-        // return (std::apply(f, var_tuple) - algebra::dual_number{std::apply(f, var_tuple).real}).dual;
-        return (std::apply(f, var_tuple) - std::apply(f, var_tuple).real).dual;
-    }
+        template <int pos, typename func_tp, typename... var_tp>
+        auto _auto_diff(func_tp f, var_tp... vars)
+        {
+            auto var_tuple = std::make_tuple(algebra::dual_number{vars}...);
+            std::get<pos>(var_tuple).dual = 1.0f;
+            return (std::apply(f, var_tuple) - std::apply(f, var_tuple).real).dual;
+        }
+#else  // C++14
+        template <int pos, typename func_tp, typename... var_tp>
+        auto _auto_diff(func_tp f, var_tp... vars)
+        {
+            auto var_tuple = std::make_tuple(algebra::dual_number<decltype(vars)>{vars}...);
+            std::get<pos>(var_tuple).dual = 1.0f;
+            auto temp = details::_pass_tuple_as_function_arguments(f, var_tuple);
+            return (temp - temp.real).dual;
+        }
+#endif // c++17
+#if __cplusplus >= 201703L
+
 #else
 
-#endif // c++17
+#endif // C++17
+    }  // namespace math::calculus::details
 
 } // namespace math::calculus
 
