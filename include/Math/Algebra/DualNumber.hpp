@@ -59,7 +59,7 @@ namespace math
             template <typename rhs_value_type>
             friend dual_number operator-(value_type scalar, dual_number<rhs_value_type> d_num)
             {
-                return dual_number{scalar - d_num.real, d_num.dual};
+                return dual_number{scalar - d_num.real, - d_num.dual};
             }
 
             template <typename rhs_value_type>
