@@ -87,6 +87,7 @@ namespace math
 
     // power group
 
+    // wrong result (sign) for d(sqrt(1-x^n))/dx
     template <typename var_type>
     algebra::dual_number<var_type> sqrt(algebra::dual_number<var_type> x)
     {
@@ -118,20 +119,47 @@ namespace math
     // exponential and logarithmic group
 
     // x only
+    // template <typename var_type>
+    // algebra::dual_number<var_type> pow(algebra::dual_number<var_type> x)
+    // {
+    //     auto xr_pow_xr = std::pow(x.real, x.real);
+    //     return algebra::dual_number<var_type>{
+    //         xr_pow_xr,
+    //         x.dual * xr_pow_xr * (1 + std::log(x.real))};
+    // }
+
     template <typename var_type>
-    algebra::dual_number<var_type> pow(algebra::dual_number<var_type> x)
+    algebra::dual_number<var_type> exp(algebra::dual_number<var_type> x)
     {
-        auto xr_pow_xr = std::pow(x.real, x.real);
+        auto exp_xr = std::exp(x.real);
         return algebra::dual_number<var_type>{
-            xr_pow_xr,
-            x.dual * xr_pow_xr * (1 + std::log(x.real))};
+            exp_xr,
+            x.dual * exp_xr};
+    }
+
+    template <typename var_type>
+    algebra::dual_number<var_type> exp_n(var_type n, algebra::dual_number<var_type> x)
+    {
+        auto exp_n_xr = std::pow(n, x.real);
+        return algebra::dual_number<var_type>{
+            exp_n_xr,
+            x.dual * std::log(n) * exp_n_xr};
+    }
+
+    template <typename var_type>
+    algebra::dual_number<var_type> log(algebra::dual_number<var_type> x)
+    {
+        return algebra::dual_number<var_type>{
+            std::log(x.real),
+            x.dual / x.real};
     }
 
     // template <typename var_type>
-    // algebra::dual_number<var_type> exp(algebra::dual_number<var_type> x, var_type p)
+    // algebra::dual_number<var_type> log_n(algebra::dual_number<var_type> x)
     // {
-    //     auto pow_xr = std::pow(x.real, p);
-    //     return algebra::dual_number<var_type>{pow_xr, p * x.dual * pow_xr / x.real};
+    //     return algebra::dual_number<var_type>{
+    //         std::log(x.real),
+    //         x.dual / x.real};
     // }
 
     // trigonometric group
