@@ -89,6 +89,8 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> abs(algebra::dual_number<var_type> x)
     {
+        if (x.real == 0.0)
+            throw std::runtime_error("x.real = 0 at math::abs<dual_number>");
         return algebra::dual_number<var_type>{
             std::abs(x.real),
             x.dual * x.real / std::abs(x.real)};
@@ -115,6 +117,8 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> sqrt(algebra::dual_number<var_type> x)
     {
+        if (x.real <= 0.0)
+            throw std::runtime_error("x.real <= 0 at math::sqrt<dual_number>");
         auto sqrt_xr = std::sqrt(x.real);
         return algebra::dual_number<var_type>{
             sqrt_xr,
@@ -124,16 +128,20 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> cbrt(algebra::dual_number<var_type> x)
     {
+        if (x.real == 0.0)
+            throw std::runtime_error("x.real = 0 at math::cbrt<dual_number>");
         auto cbrt_xr = std::cbrt(x.real);
         return algebra::dual_number<var_type>{
             cbrt_xr,
-            x.dual * (1.0 / (3 * cbrt_xr * cbrt_xr))};
+            x.dual / (3.0 * cbrt_xr * cbrt_xr))};
     }
 
     // x^x or f(x) ^ f(x)
     template <typename var_type>
     algebra::dual_number<var_type> pow(algebra::dual_number<var_type> x, var_type p)
     {
+        if (x.real == 0.0)
+            throw std::runtime_error("x.real = 0 at math::pow_x_n<dual_number>");
         auto pow_xr = std::pow(x.real, p);
         return algebra::dual_number<var_type>{
             pow_xr,
@@ -145,6 +153,8 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> pow(algebra::dual_number<var_type> x)
     {
+        if (x.real <= 0.0)
+            throw std::runtime_error("x.real <= 0 at math::pow_x_x<dual_number>");
         auto xr_pow_xr = std::pow(x.real, x.real);
         return algebra::dual_number<var_type>{
             xr_pow_xr,
@@ -173,6 +183,8 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> exp_n(var_type n, algebra::dual_number<var_type> x)
     {
+        if (x.real <= 0.0)
+            throw std::runtime_error("x.real <= 0 at math::exp_n_x<dual_number>");
         auto exp_n_xr = std::pow(n, x.real);
         return algebra::dual_number<var_type>{
             exp_n_xr,
@@ -182,6 +194,8 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> log(algebra::dual_number<var_type> x)
     {
+        if (x.real <= 0.0)
+            throw std::runtime_error("x.real <= 0 at math::ln<dual_number>");
         return algebra::dual_number<var_type>{
             std::log(x.real),
             x.dual / x.real};
@@ -197,6 +211,10 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> log_n(var_type n, algebra::dual_number<var_type> x)
     {
+        if (n <= 0.0 || n == 1.0)
+            throw std::runtime_error("n <= 0 || n = 1 at math::log_n_x<dual_number>");
+        if (x.real <= 0.0)
+            throw std::runtime_error("x.real <= 0 at math::log_n_x<dual_number>");
         auto ln_n = std::log(n);
         return algebra::dual_number<var_type>{
             std::log(x.real) / ln_n,
@@ -207,6 +225,10 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> log_x_n(algebra::dual_number<var_type> x, var_type n)
     {
+        if (n <= 0.0)
+            throw std::runtime_error("n <= 0 at math::log_x_n<dual_number>");
+        if (x.real <= 0.0 || x.real == 1.0)
+            throw std::runtime_error("x.real <= 0 || x.real = 1 at math::log_x_n<dual_number>");
         auto ln_n = std::log(n);
         auto ln_x = std::log(x.real);
         return algebra::dual_number<var_type>{
@@ -235,6 +257,8 @@ namespace math
     template <typename var_type>
     algebra::dual_number<var_type> tan(algebra::dual_number<var_type> x)
     {
+        // if (std::cos(x.real) == 0.0)
+        //     throw std::runtime_error("x.real == k(pi / 2) at math::tan<dual_number>");
         return algebra::dual_number<var_type>{
             std::tan(x.real),
             x.dual * (2.0 / (1.0 + std::cos(2.0 * x.real)))};
@@ -415,8 +439,6 @@ namespace math
     }
 
     // miscellaneous group
-
-    
 
 } // namespace math
 
