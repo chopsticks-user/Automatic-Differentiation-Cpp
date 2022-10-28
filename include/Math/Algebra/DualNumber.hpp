@@ -11,6 +11,92 @@ namespace math
 {
     namespace algebra
     {
+#ifdef USE_GLOBAL_FLOATING_POINT_TYPE
+        struct dual_number
+        {
+            math::real real;
+            math::real dual;
+
+            // using type = math::real;
+
+            dual_number() = default;
+            dual_number(math::real r, math::real d = math::real{}) : real{r}, dual(d) {}
+            dual_number(const dual_number &rhs) = default;
+            dual_number(dual_number &&rhs) = default;
+            dual_number &operator=(const dual_number &rhs) = default;
+            dual_number &operator=(dual_number &&rhs) = default;
+            ~dual_number() = default;
+
+            dual_number operator+(dual_number rhs)
+            {
+                return dual_number{real + rhs.real, dual + rhs.dual};
+            }
+
+            dual_number operator+(math::real scalar)
+            {
+                return dual_number{real + scalar, dual};
+            }
+
+            friend dual_number operator+(math::real scalar, dual_number num)
+            {
+                return dual_number{num.real + scalar, num.dual};
+            }
+
+            dual_number operator-(dual_number rhs)
+            {
+                return dual_number{real - rhs.real, dual - rhs.dual};
+            }
+
+            dual_number operator-(math::real scalar)
+            {
+                return dual_number{real - scalar, dual};
+            }
+
+            friend dual_number operator-(math::real scalar, dual_number d_num)
+            {
+                return dual_number{scalar - d_num.real, -d_num.dual};
+            }
+
+            dual_number operator*(dual_number rhs)
+            {
+                return dual_number{real * rhs.real, real * rhs.dual + dual * rhs.real};
+            }
+
+            dual_number operator*(math::real rhs)
+            {
+                return dual_number{real * rhs, dual * rhs};
+            }
+
+            friend dual_number operator*(math::real scalar, dual_number d_num)
+            {
+                return dual_number{d_num.real * scalar, d_num.dual * scalar};
+            }
+
+            dual_number operator/(dual_number rhs)
+            {
+                return dual_number{
+                    real / rhs.real,
+                    (dual * rhs.real - real * rhs.dual) / (rhs.real * rhs.real)};
+            }
+
+            dual_number operator/(math::real rhs)
+            {
+                return dual_number{real / rhs, dual / rhs};
+            }
+
+            friend dual_number operator/(math::real scalar, dual_number d_num)
+            {
+                return dual_number{
+                    scalar / d_num.real,
+                    -scalar * d_num.dual / (d_num.real * d_num.real)};
+            }
+
+            friend std::ostream &operator<<(std::ostream &os, dual_number d_num)
+            {
+                return os << "(" << d_num.real << ", " << d_num.dual << ")";
+            }
+        };
+#else  // !defined USE_GLOBAL_FLOATING_POINT_TYPE
         template <typename value_type = math::real>
         struct dual_number
         {
@@ -21,8 +107,9 @@ namespace math
 
             using type = value_type;
 
-            dual_number() = default;
             dual_number(value_type r, value_type d = value_type{}) : real{r}, dual(d) {}
+
+            dual_number() = default;
             dual_number(const dual_number &rhs) = default;
             dual_number(dual_number &&rhs) = default;
             dual_number &operator=(const dual_number &rhs) = default;
@@ -78,13 +165,34 @@ namespace math
                 return dual_number{d_num.real * scalar, d_num.dual * scalar};
             }
 
+            template <typename rhs_value_type>
+            dual_number operator/(dual_number<rhs_value_type> rhs)
+            {
+                return dual_number{
+                    real / rhs.real,
+                    (dual * rhs.real - real * rhs.dual) / (rhs.real * rhs.real)};
+            }
+
+            dual_number operator/(math::real rhs)
+            {
+                return dual_number{real / rhs, dual / rhs};
+            }
+
+            friend dual_number operator/(math::real scalar, dual_number d_num)
+            {
+                return dual_number{
+                    scalar / d_num.real,
+                    -scalar * d_num.dual / (d_num.real * d_num.real)};
+            }
+
             friend std::ostream &operator<<(std::ostream &os, dual_number d_num)
             {
                 return os << "(" << d_num.real << ", " << d_num.dual << ")";
             }
         };
-    } // namespace math::algebra
-
+#endif // USE_GLOBAL_FLOATING_POINT_TYPE
+    }  // namespace math::algebra
+#ifndef USE_GLOBAL_FLOATING_POINT_TYPE
     // x.real != 0
     template <typename var_type>
     algebra::dual_number<var_type> abs(algebra::dual_number<var_type> x)
@@ -444,6 +552,99 @@ namespace math
 
     // miscellaneous group
 
+#else // !defined USE_GLOBAL_FLOATING_POINT_TYPE
+    // x.real != 0
+    algebra::dual_number abs(algebra::dual_number x);
+
+    // power group
+
+    algebra::dual_number sq(algebra::dual_number x);
+
+    algebra::dual_number cb(algebra::dual_number x);
+
+    algebra::dual_number sqrt(algebra::dual_number x);
+
+    algebra::dual_number cbrt(algebra::dual_number x);
+
+    // x^x or f(x) ^ f(x)
+    algebra::dual_number pow(algebra::dual_number x, math::real p);
+
+    // exponential and logarithmic group
+
+    algebra::dual_number pow(algebra::dual_number x);
+
+    // pow f(x)^g(x)
+    // algebra::dual_number pow(algebra::dual_number x, algebra::dual_numberg_x)
+
+    algebra::dual_number exp(algebra::dual_number x);
+
+    algebra::dual_number exp_n(math::real n, algebra::dual_number x);
+
+    algebra::dual_number log(algebra::dual_number x);
+
+    algebra::dual_number ln(algebra::dual_number x);
+
+    // n > 1
+    algebra::dual_number log_n(math::real n, algebra::dual_number x);
+
+    // x.real > 1, log_x_n
+    algebra::dual_number log_x_n(algebra::dual_number x, math::real n);
+
+    // trigonometric group
+
+    algebra::dual_number sin(algebra::dual_number x);
+
+    algebra::dual_number cos(algebra::dual_number x);
+
+    algebra::dual_number tan(algebra::dual_number x);
+
+    algebra::dual_number cot(algebra::dual_number x);
+
+    algebra::dual_number sec(algebra::dual_number x);
+
+    algebra::dual_number csc(algebra::dual_number x);
+
+    algebra::dual_number asin(algebra::dual_number x);
+
+    algebra::dual_number acos(algebra::dual_number x);
+
+    algebra::dual_number atan(algebra::dual_number x);
+
+    algebra::dual_number acot(algebra::dual_number x);
+
+    algebra::dual_number asec(algebra::dual_number x);
+
+    algebra::dual_number acsc(algebra::dual_number x);
+
+    // hyperbolic group
+
+    algebra::dual_number sinh(algebra::dual_number x);
+
+    algebra::dual_number cosh(algebra::dual_number x);
+
+    algebra::dual_number tanh(algebra::dual_number x);
+
+    algebra::dual_number coth(algebra::dual_number x);
+
+    algebra::dual_number sech(algebra::dual_number x);
+
+    algebra::dual_number csch(algebra::dual_number x);
+
+    algebra::dual_number asinh(algebra::dual_number x);
+
+    algebra::dual_number acosh(algebra::dual_number x);
+
+    algebra::dual_number atanh(algebra::dual_number x);
+
+    algebra::dual_number acoth(algebra::dual_number x);
+
+    algebra::dual_number asech(algebra::dual_number x);
+
+    algebra::dual_number acsch(algebra::dual_number x);
+
+    // miscellaneous group
+
+#endif // !defined USE_GLOBAL_FLOATING_POINT_TYPE
 } // namespace math
 
 #endif // MATH_ALGEBRA_DUAL_NUMBER_HPP

@@ -3,7 +3,9 @@
 
 #if __cplusplus < 201402L
 #error "C++14 or higher is required"
-#endif // c++14
+#else
+
+// #define USE_GLOBAL_FLOATING_POINT_TYPE
 
 namespace math
 {
@@ -12,4 +14,5 @@ namespace math
 
 } // namespace math
 
+#endif // c++14
 #endif // MATH_CONFIG_HPP
