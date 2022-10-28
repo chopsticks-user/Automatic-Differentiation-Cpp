@@ -133,7 +133,7 @@ namespace math
         auto cbrt_xr = std::cbrt(x.real);
         return algebra::dual_number<var_type>{
             cbrt_xr,
-            x.dual / (3.0 * cbrt_xr * cbrt_xr))};
+            x.dual / (3.0 * cbrt_xr * cbrt_xr)};
     }
 
     // x^x or f(x) ^ f(x)
@@ -259,33 +259,37 @@ namespace math
     {
         // if (std::cos(x.real) == 0.0)
         //     throw std::runtime_error("x.real == k(pi / 2) at math::tan<dual_number>");
+        auto tan_xr = std::tan(x.real);
         return algebra::dual_number<var_type>{
-            std::tan(x.real),
-            x.dual * (2.0 / (1.0 + std::cos(2.0 * x.real)))};
+            tan_xr,
+            x.dual * (1.0 + tan_xr * tan_xr)};
     }
 
     template <typename var_type>
     algebra::dual_number<var_type> cot(algebra::dual_number<var_type> x)
     {
+        auto cot_xr = 1.0 / std::tan(x.real);
         return algebra::dual_number<var_type>{
-            1.0 / std::tan(x.real),
-            x.dual * (2.0 / (std::cos(2.0 * x.real) - 1))};
+            cot_xr,
+            x.dual * (-1.0 - cot_xr * cot_xr)};
     }
 
     template <typename var_type>
     algebra::dual_number<var_type> sec(algebra::dual_number<var_type> x)
     {
+        auto cos_xr = std::cos(x.real);
         return algebra::dual_number<var_type>{
-            1.0 / std::cos(x.real),
-            x.dual * (std::tan(x.real) / std::cos(x.real))};
+            1.0 / cos_xr,
+            x.dual * (std::tan(x.real) / cos_xr)};
     }
 
     template <typename var_type>
     algebra::dual_number<var_type> csc(algebra::dual_number<var_type> x)
     {
+        auto sin_xr = std::sin(x.real);
         return algebra::dual_number<var_type>{
-            1.0 / std::sin(x.real),
-            x.dual * (-1 / (std::sin(x.real) * std::tan(x.real)))};
+            1.0 / sin_xr,
+            x.dual * (-1.0 / (sin_xr * std::tan(x.real)))};
     }
 
     template <typename var_type>

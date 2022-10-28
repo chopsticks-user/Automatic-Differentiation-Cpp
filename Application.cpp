@@ -7,12 +7,12 @@ using namespace math;
 
 auto func = [](auto x)
 {
-    return math::acsc(x);
+    return math::tan(x);
 };
 
 auto sfunc = [](auto x)
 {
-    return math::acsc(math::sq(x) + math::sin(x));
+    return math::sqrt(x);
 };
 
 using calculus::details::_auto_diff;
