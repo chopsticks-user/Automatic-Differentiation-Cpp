@@ -414,6 +414,10 @@ namespace math
             -x.dual * std::abs(x.real) * std::sqrt(1.0 + x.real * x.real)};
     }
 
+    // miscellaneous group
+
+    
+
 } // namespace math
 
 #endif // MATH_ALGEBRA_DUAL_NUMBER_HPP
