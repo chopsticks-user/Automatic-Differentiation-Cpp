@@ -89,7 +89,7 @@ namespace math::calculus
 #endif // c++17
 #if __cplusplus >= 201703L
 
-#else
+#else // c++14
 
 #endif // C++17
     }  // namespace math::calculus::details

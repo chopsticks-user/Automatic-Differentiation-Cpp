@@ -10,7 +10,7 @@
 namespace math
 {
     typedef double real;
-    typedef int default_integer_type;
+    typedef unsigned int size_type;
 
 } // namespace math
 
