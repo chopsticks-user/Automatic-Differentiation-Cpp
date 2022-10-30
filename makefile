@@ -41,5 +41,4 @@ $(ENTRY_NAME): $(ENTRY_NAME).cpp
 clean:
 	rm -f build/$(ENTRY_NAME)
 	rm -f build/*.asm
-	rm -f *.s
 	rm -f build/$(ENTRY_NAME).dump

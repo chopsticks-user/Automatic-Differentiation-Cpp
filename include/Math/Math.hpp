@@ -4,7 +4,6 @@
 #include "Config.hpp"
 
 #if __cplusplus >= 201402L
-#include "Algebra.hpp"
 #include "Calculus.hpp"
 
 #define make_math_function(variable, function) [](auto(variable)) { return (function); }
